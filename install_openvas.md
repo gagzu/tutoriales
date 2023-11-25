@@ -387,26 +387,8 @@ Validación de feeds.
 ```
 export GNUPGHOME=/tmp/openvas-gnupg && \
 mkdir -p $GNUPGHOME && \
-gpg --import /tmp/GBCommunitySigningKey.asc && \
-echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust
 export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg && \
 sudo mkdir -p $OPENVAS_GNUPG_HOME && \
 sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ && \
 sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 ```
-
-OpenVAS se lanzará desde un proceso ospd-openvas. Actualice la ruta segura en el archivo sudoers en consecuencia.
-
-```
-sudo visudo
-
-# Allow members of group sudo to execute any command
-%sudo   ALL=(ALL:ALL) ALL
-
-# allow users of the gvm group run openvas
-%gvm ALL = NOPASSWD: /usr/local/sbin/openvas
-```
-
-
-
-
