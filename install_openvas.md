@@ -474,3 +474,177 @@ Por lo tanto, gvmd solo creará estos recursos si se configura un propietario de
 ```
 /usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value `/usr/local/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}'`
 ```
+
+### Instalar greenbone-feed-sync
+
+Instale el nuevo greenbone-feed-sync que reemplazó el antiguo enfoque de sincronizar los datos (VT, SCAP, CERT y GVMD) individualmente.
+
+```
+mkdir -p $INSTALL_DIR/greenbone-feed-sync && \
+python3 -m pip install --root=$INSTALL_DIR/greenbone-feed-sync --no-warn-script-location greenbone-feed-sync && \
+sudo cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
+```
+
+### Sincronización de Greenbone Feed
+
+```
+sudo /usr/local/bin/greenbone-feed-sync
+```
+
+### Configurar sistema
+Cree el script de servicio systemd para ospd-openvas. Para Ubuntu, establezca la dirección específica del intermediario mqtt para el host del servidor.
+
+```
+cat << EOF > $BUILD_DIR/ospd-openvas.service
+[Unit]
+Description=OSPd Wrapper for the OpenVAS Scanner (ospd-openvas)
+Documentation=man:ospd-openvas(8) man:openvas(8)
+After=network.target networking.service redis-server@openvas.service
+Wants=redis-server@openvas.service
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+RuntimeDirectory=ospd
+RuntimeDirectoryMode=2775
+PIDFile=/run/ospd/ospd-openvas.pid
+ExecStart=/usr/local/bin/ospd-openvas --foreground --unix-socket /run/ospd/ospd-openvas.sock --pid-file /run/ospd/ospd-openvas.pid --log-file /var/log/gvm/ospd-openvas.log --lock-file-dir /var/lib/openvas --socket-mode 0o770 --mqtt-broker-address 192.168.0.1 --mqtt-broker-port 1883 --notus-feed-dir /var/lib/notus/advisories
+SuccessExitStatus=SIGKILL
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Ahora copie el script de inicio en el directorio del administrador de su sistema.
+
+```
+sudo cp $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
+```
+
+Cree el script de servicio systemd para notus-scanner.
+
+```
+cat << EOF > $BUILD_DIR/notus-scanner.service
+[Unit]
+Description=Notus Scanner
+Documentation=https://github.com/greenbone/notus-scanner
+After=mosquitto.service
+Wants=mosquitto.service
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+RuntimeDirectory=notus-scanner
+RuntimeDirectoryMode=2775
+PIDFile=/run/notus-scanner/notus-scanner.pid
+ExecStart=/usr/local/bin/notus-scanner --foreground --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
+SuccessExitStatus=SIGKILL
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Finalmente copie el último script de inicio en el directorio del administrador de su sistema.
+
+```
+sudo cp $BUILD_DIR/notus-scanner.service /etc/systemd/system/
+```
+Luego configure los scripts de inicio. Primero configure el script de inicio de Greenbone Manager.
+
+```
+cat << EOF > $BUILD_DIR/gvmd.service
+[Unit]
+Description=Greenbone Vulnerability Manager daemon (gvmd)
+After=network.target networking.service postgresql.service ospd-openvas.service
+Wants=postgresql.service ospd-openvas.service
+Documentation=man:gvmd(8)
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+PIDFile=/run/gvmd/gvmd.pid
+RuntimeDirectory=gvmd
+RuntimeDirectoryMode=2775
+ExecStart=/usr/local/sbin/gvmd --foreground --osp-vt-update=/run/ospd/ospd-openvas.sock --listen-group=gvm
+Restart=always
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Copie el script de inicio de la carpeta de compilación al directorio del administrador del sistema.
+
+```
+sudo cp $BUILD_DIR/gvmd.service /etc/systemd/system/
+```
+
+Una vez guardado el primer script de inicio, proceda a crear el script para Greenbone Security Assistant (GSA). Recuerde definir su dirección IP para GSA.
+
+```
+cat << EOF > $BUILD_DIR/gsad.service
+[Unit]
+Description=Greenbone Security Assistant daemon (gsad)
+Documentation=man:gsad(8) https://www.greenbone.net
+After=network.target gvmd.service
+Wants=gvmd.service
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+RuntimeDirectory=gsad
+RuntimeDirectoryMode=2775
+PIDFile=/run/gsad/gsad.pid
+ExecStart=/usr/local/sbin/gsad --foreground --listen=192.168.0.1 --port=9392 --http-only
+Restart=always
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+Alias=greenbone-security-assistant.service
+EOF
+```
+
+Copie el script de inicio al directorio del sistema.
+
+```
+sudo cp $BUILD_DIR/gsad.service /etc/systemd/system/
+```
+
+### Habilitar e iniciar servicios
+Para habilitar los scripts de inicio creados, vuelva a cargar el demonio de control del sistema.
+
+```
+sudo systemctl daemon-reload
+```
+
+Una vez que hayas recargado el demonio procede a habilitar cada uno de los servicios.
+
+```
+sudo systemctl enable notus-scanner
+sudo systemctl enable ospd-openvas
+sudo systemctl enable gvmd
+sudo systemctl enable gsad
+```
+
+Luego inicie cada servicio.
+
+```
+sudo systemctl start ospd-openvas
+sudo systemctl start notus-scanner
+sudo systemctl start gvmd
+sudo systemctl start gsad
+```
