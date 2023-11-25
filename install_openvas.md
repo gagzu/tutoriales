@@ -463,3 +463,8 @@ User created.
 
 > No olvides cambiar la contraseña más tarde.
 
+Utilice el uuid de administración y modifique la configuración de gvmd. Recuerda poner tu uuid como opción de valor.
+
+```
+/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID_HERE
+```
