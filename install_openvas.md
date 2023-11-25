@@ -392,3 +392,13 @@ sudo mkdir -p $OPENVAS_GNUPG_HOME && \
 sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ && \
 sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 ```
+
+### Configurar Mosquitto broker
+
+El corredor Mosquitto MQTT se utiliza para la comunicación entre ospd-openvas, openvas-scanner y notus-scanner.
+
+```
+sudo systemctl start mosquitto.service && \
+sudo systemctl enable mosquitto.service && \
+echo "mqtt_server_uri = localhost:1883\ntable_driven_lsc = yes" | sudo tee -a /etc/openvas/openvas.conf
+```
