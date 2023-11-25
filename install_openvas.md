@@ -393,6 +393,18 @@ sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ && \
 sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 ```
 
+OpenVAS se lanzará desde un proceso ospd-openvas. Actualice la ruta segura en el archivo sudoers en consecuencia.
+
+```
+sudo visudo
+```
+
+El comando anterior abríra un editor de texto y debemos agregar al final lo siguiente:
+```
+# allow users of the gvm group run openvas
+%gvm ALL = NOPASSWD: /usr/local/sbin/openvas
+```
+
 ### Configurar Mosquitto broker
 
 El corredor Mosquitto MQTT se utiliza para la comunicación entre ospd-openvas, openvas-scanner y notus-scanner.
@@ -402,3 +414,52 @@ sudo systemctl start mosquitto.service && \
 sudo systemctl enable mosquitto.service && \
 echo "mqtt_server_uri = localhost:1883\ntable_driven_lsc = yes" | sudo tee -a /etc/openvas/openvas.conf
 ```
+
+### Configurar la base de datos PostgreSQL
+Para obtener información adicional, consulte la referencia greenbone/gvmd [INSTALL.md](https://github.com/greenbone/gvmd/blob/main/INSTALL.md). Primero asegúrese de que se hayan instalado las dependencias requeridas (consulte Requisitos previos ). Antes de que podamos agregar el usuario de PostgreSQL, asegúrese de que el servicio esté en funcionamiento.
+
+```
+sudo systemctl start postgresql@14-main.service
+```
+
+Proceda a crear un usuario y una base de datos de Postgres.
+
+```
+sudo -u postgres bash
+cd
+createuser -DRS gvm
+createdb -O gvm gvmd
+psql gvmd
+```
+
+Configure los permisos correctos y cree extensiones de base de datos.
+
+```
+# Una vez dentro de la CLI de postgresql ejecutar los siguientes comandos
+create role dba with superuser noinherit;
+grant dba to gvm;
+create extension "uuid-ossp";
+create extension "pgcrypto";
+exit
+exit
+```
+
+### Crear administrador de GVM
+
+Para acceder y configurar los datos de vulnerabilidad, es necesario crear un usuario administrador. Este usuario puede iniciar sesión a través de la interfaz web de Greenbone Security Assistant (GSA). Tendrán acceso a todos los datos y luego se configurarán para actuar como propietario de importación de feeds.
+
+Antes de crear el administrador, asegúrese de salir de la sesión de Postgres y de volver a cargar la caché del cargador dinámico.
+
+```
+sudo ldconfig
+```
+
+Una vez que haya recargado la caché del cargador dinámico, continúe con la creación del usuario.
+
+```
+/usr/local/sbin/gvmd --create-user=admin --password=admin
+User created.
+```
+
+> No olvides cambiar la contraseña más tarde.
+
