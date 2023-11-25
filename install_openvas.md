@@ -458,13 +458,19 @@ Una vez que haya recargado la caché del cargador dinámico, continúe con la cr
 
 ```
 /usr/local/sbin/gvmd --create-user=admin --password=admin
-User created.
 ```
 
 > No olvides cambiar la contraseña más tarde.
 
-Utilice el uuid de administración y modifique la configuración de gvmd. Recuerda poner tu uuid como opción de valor.
+
+### Configuración del propietario de la importación de feeds
+
+Ciertos recursos que anteriormente formaban parte del código fuente de gvmd ahora se envían a través del feed. Un ejemplo es la configuración de escaneo “Completo y Rápido”.
+
+Actualmente, cada recurso necesita un propietario para aplicar los permisos y gestionar el acceso a los recursos.
+
+Por lo tanto, gvmd solo creará estos recursos si se configura un propietario de importación de feeds. Aquí, el usuario administrador creado previamente se utilizará como propietario de importación de feeds.
 
 ```
-/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID_HERE
+/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value `/usr/local/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}'`
 ```
