@@ -344,7 +344,7 @@ sudo chown redis:redis /etc/redis/redis-openvas.conf && \
 echo "db_address = /run/redis-openvas/redis.sock" | sudo tee -a /etc/openvas/openvas.conf
 ```
 
-Agregue redis al grupo GVM.
+Además, el usuario de gvm debe poder acceder al socket redis Unix en /run/redis-openvas/redis.sock. así que agregamos al usuario gvm al grupo redis
 
 ```
 sudo usermod -aG redis gvm
@@ -387,6 +387,8 @@ Validación de feeds.
 ```
 export GNUPGHOME=/tmp/openvas-gnupg && \
 mkdir -p $GNUPGHOME && \
+gpg --import /tmp/GBCommunitySigningKey.asc && \
+echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust && \
 export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg && \
 sudo mkdir -p $OPENVAS_GNUPG_HOME && \
 sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ && \
