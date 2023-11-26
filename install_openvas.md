@@ -100,7 +100,7 @@ Una vez que haya confirmado que la firma es buena, proceda a instalar las biblio
 ```
 tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION.tar.gz && \
 mkdir -p $BUILD_DIR/gvm-libs && cd $BUILD_DIR/gvm-libs && \
-cmake $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION \
+cmake $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION \
   -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
   -DCMAKE_BUILD_TYPE=Release \
   -DSYSCONFDIR=/etc \
