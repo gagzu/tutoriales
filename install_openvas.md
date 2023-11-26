@@ -1,4 +1,4 @@
-# Como instalar OpenVAS en Ubuntu
+# Como instalar OpenVAS en Ubuntu 22.04
 
 OpenVAS (Open Vulnerability Assessment System): OpenVAS es un escáner de vulnerabilidades de código abierto que forma parte de GVM. Realiza escaneos de seguridad en sistemas y redes para identificar posibles vulnerabilidades. OpenVAS utiliza una base de datos de pruebas de seguridad y está constantemente actualizado para incluir información sobre nuevas vulnerabilidades.
 
@@ -11,6 +11,7 @@ Greenbone es el proveedor de gestión de vulnerabilidades de código abierto má
 - [Sitio web OpenVAS](https://www.openvas.org/)
 - [GitHub](https://github.com/greenbone)
 - [Documentos oficiales de GVM](https://greenbone.github.io/docs/latest/)
+- [Guía inspirada en libellux](https://www.libellux.com/openvas/)
 
 ---
 
@@ -670,3 +671,10 @@ sudo systemctl start notus-scanner
 sudo systemctl start gvmd
 sudo systemctl start gsad
 ```
+
+> Recuerde que aunque el inicio inicial de los servicios se devuelve inmediatamente, pueden pasar varios minutos o incluso horas hasta que los servicios estén listos. Para obtener más información, visite los documentos oficiales de GVM.
+
+#FIN
+
+
+**Feliz codificación** ✌💻
