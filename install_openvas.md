@@ -225,6 +225,25 @@ curl -f -L https://github.com/greenbone/gsad/releases/download/v$GSAD_VERSION/gs
 gpg --verify $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz.asc $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz
 ```
 
+Una vez que haya verificado que la firma es correcta, proceda a compilar e instalar GSAD.
+
+```
+tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz && \
+mkdir -p $BUILD_DIR/gsad && cd $BUILD_DIR/gsad && \
+cmake $SOURCE_DIR/gsad-$GSAD_VERSION \
+  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DSYSCONFDIR=/etc \
+  -DLOCALSTATEDIR=/var \
+  -DGVMD_RUN_DIR=/run/gvmd \
+  -DGSAD_RUN_DIR=/run/gsad \
+  -DLOGROTATE_DIR=/etc/logrotate.d && \
+make DESTDIR=$INSTALL_DIR install && \
+sudo cp -rv $INSTALL_DIR/* / && \
+rm -rf $INSTALL_DIR/*
+```
+
+
 ### Construya el módulo OpenVAS Samba
 
 openvas-smb es un módulo auxiliar para openvas-scanner. Incluye bibliotecas (openvas-wmiclient/openvas-wincmd) para interactuar con los sistemas Microsoft Windows a través de la API de Instrumental de administración de Windows y un binario winexe para ejecutar procesos de forma remota en ese sistema.
