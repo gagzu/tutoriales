@@ -84,7 +84,7 @@ curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VE
 ### Verificando el archivo fuente
 
 ```
-gpg --verify $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
+gpg --verify $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION.tar.gz.asc $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
 ```
 
 El resultado del último comando debería ser similar a:
@@ -419,7 +419,7 @@ echo "mqtt_server_uri = localhost:1883\ntable_driven_lsc = yes" | sudo tee -a /e
 Para obtener información adicional, consulte la referencia greenbone/gvmd [INSTALL.md](https://github.com/greenbone/gvmd/blob/main/INSTALL.md). Primero asegúrese de que se hayan instalado las dependencias requeridas (consulte Requisitos previos ). Antes de que podamos agregar el usuario de PostgreSQL, asegúrese de que el servicio esté en funcionamiento.
 
 ```
-sudo systemctl start postgresql@14-main.service
+sudo systemctl start postgresql@15-main.service
 ```
 
 Proceda a crear un usuario y una base de datos de Postgres.
