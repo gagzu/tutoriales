@@ -187,9 +187,9 @@ Al ejecutar el comando anteriores, se descarga un script y lo ejecuta. El script
 source ~/.bashrc
 ```
 
-Luego de eso procedemos a intalar node16 y luego yarn
+Luego de eso procedemos a instalar node18 y luego yarn
 ```
-nvm install 16 && npm i -g yarn
+nvm install 18 && npm i -g yarn
 ```
 
 ### Construya el asistente de seguridad Greenbone
