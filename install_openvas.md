@@ -84,7 +84,7 @@ curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VE
 ### Verificando el archivo fuente
 
 ```
-gpg --verify $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION.tar.gz.asc $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
+gpg --verify $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION.tar.gz.asc $SOURCE_DIR/gvm-libs-v$GVM_LIBS_VERSION.tar.gz
 ```
 
 El resultado del último comando debería ser similar a:
