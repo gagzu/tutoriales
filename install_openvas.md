@@ -21,7 +21,7 @@ Instalamos dependencias
 sudo apt update && \
 sudo apt -y upgrade && \
 sudo apt install -y build-essential && \
-sudo apt install -y cmake pkg-config gcc-mingw-w64 \
+sudo apt install -y cmake pkg-config gcc-mingw-w64 git curl \
 libgnutls28-dev libxml2-dev libssh-gcrypt-dev libunistring-dev \
 libldap2-dev libgcrypt20-dev libpcap-dev libglib2.0-dev libgpgme-dev libradcli-dev libjson-glib-dev \
 libksba-dev libical-dev libpq-dev libsnmp-dev libpopt-dev libnet1-dev gnupg gnutls-bin \
