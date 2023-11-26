@@ -422,7 +422,7 @@ echo "mqtt_server_uri = localhost:1883\ntable_driven_lsc = yes" | sudo tee -a /e
 Para obtener información adicional, consulte la referencia greenbone/gvmd [INSTALL.md](https://github.com/greenbone/gvmd/blob/main/INSTALL.md). Primero asegúrese de que se hayan instalado las dependencias requeridas (consulte Requisitos previos ). Antes de que podamos agregar el usuario de PostgreSQL, asegúrese de que el servicio esté en funcionamiento.
 
 ```
-sudo systemctl start postgresql@15-main.service
+sudo systemctl start postgresql@14-main.service
 ```
 
 Proceda a crear un usuario y una base de datos de Postgres.
@@ -611,7 +611,7 @@ Group=gvm
 RuntimeDirectory=gsad
 RuntimeDirectoryMode=2775
 PIDFile=/run/gsad/gsad.pid
-ExecStart=/usr/local/sbin/gsad --foreground --listen=192.168.0.1 --port=9392 --http-only
+ExecStart=/usr/local/sbin/gsad --foreground --listen=127.0.0.1 --port=9392 --http-only
 Restart=always
 TimeoutStopSec=10
 
